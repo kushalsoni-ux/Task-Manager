@@ -20,7 +20,7 @@ Deploy the frontend to Vercel, keep backend on Railway.
 4. Build Command: `npm run build`
 5. Output Directory: `dist`
 6. Add Environment Variables:
-   - `VITE_API_BASE_URL` = Your backend URL (e.g., `https://your-backend.railway.app`)
+   - `VITE_API_URL` = Your backend URL (e.g., `https://your-backend.railway.app/api`)
 
 ---
 
@@ -37,7 +37,7 @@ Deploy both frontend and backend to Vercel.
    ```
    DATABASE_URL = postgresql://user:password@host:port/database
    JWT_SECRET = your-secret-key
-   VITE_API_BASE_URL = your-vercel-api-domain.vercel.app
+   VITE_API_URL = your-vercel-api-domain.vercel.app/api
    FRONTEND_URL = your-vercel-frontend-domain.vercel.app
    NODE_ENV = production
    ```
@@ -55,7 +55,7 @@ NODE_ENV=production
 
 ### Frontend
 ```
-VITE_API_BASE_URL=https://your-api-domain.com/api
+VITE_API_URL=https://your-api-domain.com/api
 ```
 
 ---
