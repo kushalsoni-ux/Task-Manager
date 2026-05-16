@@ -1,8 +1,13 @@
-const { query } = require('../db/pool');
+const { query, hasDatabaseConfig } = require('../db/pool');
+const { getFallbackDashboard } = require('../utils/fallback-store');
 const { serialize } = require('../utils/serialize');
 
 const getDashboard = async (req, res, next) => {
   try {
+    if (!hasDatabaseConfig()) {
+      return res.json(serialize(getFallbackDashboard(req.user)));
+    }
+
     const userId  = req.user.id;
     const isAdmin = req.user.role === 'ADMIN';
     const projectAccessClause = isAdmin

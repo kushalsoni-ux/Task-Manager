@@ -2,7 +2,7 @@ const { Pool } = require('pg');
 
 let _pool = null;
 
-const getConnectionConfig = () => {
+const resolveConnectionConfig = () => {
   const host = process.env.PGHOST || process.env.POSTGRES_HOST;
   const port = process.env.PGPORT || process.env.POSTGRES_PORT;
   const user = process.env.PGUSER || process.env.POSTGRES_USER;
@@ -47,6 +47,15 @@ const getConnectionConfig = () => {
     };
   }
 
+  return null;
+};
+
+const hasDatabaseConfig = () => Boolean(resolveConnectionConfig());
+
+const getConnectionConfig = () => {
+  const config = resolveConnectionConfig();
+  if (config) return config;
+
   throw new Error('Database connection env is not set. Add DATABASE_URL, POSTGRES_URL, or POSTGRES_HOST/POSTGRES_USER/POSTGRES_DATABASE.');
 };
 
@@ -68,4 +77,4 @@ const query = (text, params) => getPool().query(text, params);
 const getClient = () => getPool().connect();
 const endPool = () => _pool ? _pool.end().finally(() => { _pool = null; }) : Promise.resolve();
 
-module.exports = { query, getClient, endPool, getPool };
+module.exports = { query, getClient, endPool, getPool, hasDatabaseConfig };

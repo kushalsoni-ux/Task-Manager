@@ -1,5 +1,6 @@
 const { verifyAccessToken } = require('../utils/jwt');
-const { query } = require('../db/pool');
+const { query, hasDatabaseConfig } = require('../db/pool');
+const { getUserWithFallback } = require('../utils/fallback-store');
 
 const authenticate = async (req, res, next) => {
   try {
@@ -7,6 +8,12 @@ const authenticate = async (req, res, next) => {
     if (!header?.startsWith('Bearer ')) return res.status(401).json({ error: 'Access token required' });
 
     const decoded = verifyAccessToken(header.split(' ')[1]);
+
+    if (!hasDatabaseConfig()) {
+      req.user = getUserWithFallback(decoded);
+      return next();
+    }
+
     const { rows } = await query(
       'SELECT id, name, email, role, avatar FROM users WHERE id = $1',
       [decoded.id]
