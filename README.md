@@ -153,22 +153,29 @@ If you prefer two Railway services:
 
 This repo now includes Vercel configuration for both common setups:
 
-- `vercel.json` for deploying from the repository root
-- `frontend/vercel.json` for deploying with `frontend/` as the project root
+- `vercel.json` for the full-stack deployment from the repository root
+- `frontend/vercel.json` for a frontend-only deployment with `frontend/` as the project root
 
-These settings force Vercel to use the Vite build instead of guessing a Create React App build, so it will not try to run `react-scripts build`.
+The repository root setup is the one that deploys both the Vite frontend and the Express backend on Vercel. It builds the frontend into `frontend/dist` and exposes the backend as Vercel functions under `/api/*`.
 
 Recommended Vercel setup:
 
 - Node.js version: `20.x` (also pinned in `package.json`)
 - Framework preset: `Other` or `Vite`
-- Root directory: repository root or `frontend`
+- Root directory: repository root for the full-stack deployment
 - Build command: leave empty in the dashboard so the checked-in `vercel.json` is used
 - Output directory: leave empty in the dashboard so the checked-in `vercel.json` is used
 
-Required Vercel environment variable:
+Full-stack Vercel notes:
 
-- `VITE_API_URL=https://your-backend-domain/api`
+- Do not set the Vercel project root to `frontend/` if you want the backend included
+- The frontend defaults to `/api`, so it can talk to the backend on the same Vercel domain
+- Set backend env vars in Vercel: `DATABASE_URL`, `JWT_SECRET`, `JWT_REFRESH_SECRET`, `JWT_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN`
+- `FRONTEND_URL` is optional for same-domain deployments, but you can set it to your production Vercel URL
+
+Frontend-only deployment note:
+
+- If you intentionally deploy only `frontend/`, then you must set `VITE_API_URL=https://your-backend-domain/api`
 
 If your Vercel project previously had a manual `react-scripts build` override, remove that override in Project Settings and redeploy once so Vercel uses the repo config.
 
