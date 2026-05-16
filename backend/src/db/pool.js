@@ -3,11 +3,18 @@ const { Pool } = require('pg');
 let _pool = null;
 
 const getConnectionConfig = () => {
+  const host = process.env.PGHOST || process.env.POSTGRES_HOST;
+  const port = process.env.PGPORT || process.env.POSTGRES_PORT;
+  const user = process.env.PGUSER || process.env.POSTGRES_USER;
+  const password = process.env.PGPASSWORD || process.env.POSTGRES_PASSWORD;
+  const database = process.env.PGDATABASE || process.env.POSTGRES_DATABASE;
+  const sslMode = process.env.PGSSLMODE || process.env.POSTGRES_SSLMODE;
   const rawUrl = [
     process.env.DATABASE_URL,
     process.env.POSTGRES_URL,
     process.env.POSTGRES_PRISMA_URL,
     process.env.POSTGRES_URL_NON_POOLING,
+    process.env.POSTGRES_URL_NO_SSL,
   ].find(Boolean);
 
   if (rawUrl) {
@@ -24,23 +31,23 @@ const getConnectionConfig = () => {
     };
   }
 
-  if (process.env.PGHOST && process.env.PGUSER && process.env.PGDATABASE) {
+  if (host && user && database) {
     const useSSL =
-      process.env.PGSSLMODE === 'require' ||
+      sslMode === 'require' ||
       (process.env.NODE_ENV === 'production' &&
-        !['localhost', '127.0.0.1'].includes(process.env.PGHOST));
+        !['localhost', '127.0.0.1'].includes(host));
 
     return {
-      host: process.env.PGHOST,
-      port: process.env.PGPORT ? Number(process.env.PGPORT) : 5432,
-      user: process.env.PGUSER,
-      password: process.env.PGPASSWORD,
-      database: process.env.PGDATABASE,
+      host,
+      port: port ? Number(port) : 5432,
+      user,
+      password,
+      database,
       ssl: useSSL ? { rejectUnauthorized: false } : false,
     };
   }
 
-  throw new Error('Database connection env is not set');
+  throw new Error('Database connection env is not set. Add DATABASE_URL, POSTGRES_URL, or POSTGRES_HOST/POSTGRES_USER/POSTGRES_DATABASE.');
 };
 
 const getPool = () => {
