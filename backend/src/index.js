@@ -2,6 +2,7 @@
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 }
+const path = require('path');
 const express    = require('express');
 const cors       = require('cors');
 const helmet     = require('helmet');
@@ -52,6 +53,16 @@ app.use('/api/projects',      require('./routes/project.routes'));
 app.use('/api/tasks',         require('./routes/task.routes'));
 app.use('/api/dashboard',     require('./routes/dashboard.routes'));
 app.use('/api/notifications', require('./routes/notification.routes'));
+
+// Serve the built frontend when deploying the monorepo as a single Railway service.
+const frontendDistPath = path.resolve(__dirname, '../../frontend/dist');
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(frontendDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path === '/health') return next();
+    return res.sendFile(path.join(frontendDistPath, 'index.html'));
+  });
+}
 
 // 404
 app.use((req, res) => res.status(404).json({ error: 'Route not found' }));

@@ -107,6 +107,46 @@ The frontend dev server starts at `http://localhost:5173` by default.
 
 ---
 
+## Railway Deployment
+
+### Recommended: Single-Service Deploy From Repo Root
+
+This repository is now set up so Railway can deploy directly from the repo root:
+
+- Railway builds the frontend from `frontend/`
+- Railway starts the backend from `backend/`
+- the backend serves the built frontend in production
+- the deployed app uses one Railway URL for both UI and API
+
+Required Railway variables:
+
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `JWT_REFRESH_SECRET`
+- `JWT_EXPIRES_IN=15m`
+- `JWT_REFRESH_EXPIRES_IN=7d`
+- `NODE_ENV=production`
+
+Optional:
+
+- `FRONTEND_URL`
+
+Deployment notes:
+
+- Point the Railway service at the repository root, not `frontend/` or `backend/`
+- The root `railway.toml` handles build and start automatically
+- The frontend production API URL is set to `/api`, so it works behind the same Railway domain
+
+### Alternative: Separate Frontend / Backend Services
+
+If you prefer two Railway services:
+
+- use `backend/railway.toml` for the API service
+- use `frontend/railway.toml` for the frontend service
+- set `VITE_API_URL` on the frontend service to the deployed backend URL plus `/api`
+
+---
+
 ## Usage
 
 1. Open the app and sign in with a demo account (see table above).
