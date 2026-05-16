@@ -149,6 +149,31 @@ If you prefer two Railway services:
 
 ---
 
+## Vercel Deployment
+
+This repo now includes Vercel configuration for both common setups:
+
+- `vercel.json` for deploying from the repository root
+- `frontend/vercel.json` for deploying with `frontend/` as the project root
+
+These settings force Vercel to use the Vite build instead of guessing a Create React App build, so it will not try to run `react-scripts build`.
+
+Recommended Vercel setup:
+
+- Node.js version: `20.x` (also pinned in `package.json`)
+- Framework preset: `Other` or `Vite`
+- Root directory: repository root or `frontend`
+- Build command: leave empty in the dashboard so the checked-in `vercel.json` is used
+- Output directory: leave empty in the dashboard so the checked-in `vercel.json` is used
+
+Required Vercel environment variable:
+
+- `VITE_API_URL=https://your-backend-domain/api`
+
+If your Vercel project previously had a manual `react-scripts build` override, remove that override in Project Settings and redeploy once so Vercel uses the repo config.
+
+---
+
 ## Usage
 
 1. Open the app and sign in with a demo account (see table above).
