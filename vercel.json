@@ -5,7 +5,7 @@
   "buildCommand": "npm --prefix frontend run build",
   "outputDirectory": "frontend/dist",
   "functions": {
-    "api/[...path].js": {
+    "api/**/*.js": {
       "memory": 1024,
       "maxDuration": 30
     }

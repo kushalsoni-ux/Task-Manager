@@ -1,3 +1,3 @@
 const { withApiBase } = require('../backend/src/vercel-handler');
 
-module.exports = withApiBase();
+module.exports = withApiBase('/dashboard');
