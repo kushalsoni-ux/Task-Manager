@@ -136,6 +136,8 @@ Deployment notes:
 - Point the Railway service at the repository root, not `frontend/` or `backend/`
 - The root `railway.toml` handles build and start automatically
 - The frontend production API URL is set to `/api`, so it works behind the same Railway domain
+- After the first successful deploy, open `Railway -> Service -> Networking -> Public Networking` and click `Generate Domain`
+- If a `*.up.railway.app` URL returns `NXDOMAIN`, that hostname is not active for the current service and you need to generate or re-generate the public domain in Railway
 
 ### Alternative: Separate Frontend / Backend Services
 

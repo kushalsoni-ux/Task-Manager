@@ -2,6 +2,7 @@
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 }
+const fs = require('fs');
 const path = require('path');
 const express    = require('express');
 const cors       = require('cors');
@@ -56,11 +57,12 @@ app.use('/api/notifications', require('./routes/notification.routes'));
 
 // Serve the built frontend when deploying the monorepo as a single Railway service.
 const frontendDistPath = path.resolve(__dirname, '../../frontend/dist');
-if (process.env.NODE_ENV === 'production') {
+const frontendEntryPath = path.join(frontendDistPath, 'index.html');
+if (fs.existsSync(frontendEntryPath)) {
   app.use(express.static(frontendDistPath));
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api') || req.path === '/health') return next();
-    return res.sendFile(path.join(frontendDistPath, 'index.html'));
+    return res.sendFile(frontendEntryPath);
   });
 }
 
@@ -76,8 +78,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>
-  console.log(`🚀 TeamFlow API running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`));
+const PORT = Number(process.env.PORT) || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(PORT, HOST, () =>
+  console.log(`🚀 TeamFlow API running on ${HOST}:${PORT} [${process.env.NODE_ENV || 'development'}]`));
 
 module.exports = app;
