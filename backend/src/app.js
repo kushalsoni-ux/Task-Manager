@@ -51,6 +51,12 @@ app.use('/api/auth', rateLimit({
   message: { error: 'Too many auth attempts.' },
 }));
 
+app.use('/api/session', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: { error: 'Too many auth attempts.' },
+}));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -60,6 +66,7 @@ app.get(['/health', '/api/health'], (req, res) =>
   res.json({ status: 'ok', timestamp: new Date().toISOString(), version: '1.0.0' }));
 
 app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/api/session', require('./routes/auth.routes'));
 app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/projects', require('./routes/project.routes'));
 app.use('/api/tasks', require('./routes/task.routes'));
