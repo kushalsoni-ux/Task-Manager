@@ -1,0 +1,47 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "frontend/dist",
+  "env": {
+    "VITE_API_BASE_URL": "@vite_api_base_url",
+    "DATABASE_URL": "@database_url",
+    "JWT_SECRET": "@jwt_secret",
+    "NODE_ENV": "production"
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "backend/src/index.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "frontend/dist/index.html"
+    }
+  ],
+  "functions": {
+    "backend/src/index.js": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "buildCommand": "npm install",
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "JWT_SECRET": "@jwt_secret",
+    "NODE_ENV": "production",
+    "PORT": "3001"
+  },
+  "functions": {
+    "src/index.js": {
+      "memory": 1024,
+      "maxDuration": 60,
+      "runtime": "nodejs18.x"
+    }
+  }
+}
