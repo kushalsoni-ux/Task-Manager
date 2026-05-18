@@ -5,7 +5,7 @@ const { serialize } = require('../utils/serialize');
 const getDashboard = async (req, res, next) => {
   try {
     if (!hasDatabaseConfig()) {
-      return res.json(serialize(getFallbackDashboard(req.user)));
+      return res.json(serialize({ storageMode: 'fallback', ...getFallbackDashboard(req.user) }));
     }
 
     const userId  = req.user.id;

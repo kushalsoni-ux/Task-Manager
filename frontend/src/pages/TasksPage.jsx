@@ -87,6 +87,7 @@ export default function TasksPage() {
   const { user } = useAuthStore();
 
   const fetchTasks = () => {
+    setLoading(true);
     const params = { assigneeId: user?.id };
     if (statusFilter) params.status = statusFilter;
     if (priorityFilter) params.priority = priorityFilter;
@@ -97,7 +98,7 @@ export default function TasksPage() {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { fetchTasks(); }, [statusFilter, priorityFilter, overdueOnly]);
+  useEffect(() => { fetchTasks(); }, [user?.id, statusFilter, priorityFilter, overdueOnly]);
 
   const handleStatusChange = async (taskId, status) => {
     try {

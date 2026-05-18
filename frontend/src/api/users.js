@@ -1,9 +1,16 @@
 import api from './axios';
+import {
+  changeFallbackPassword,
+  getFallbackUsers,
+  runWithFallback,
+  updateFallbackProfile,
+  updateFallbackUserRole,
+} from './fallbackData';
 
 export const usersAPI = {
-  getAll: () => api.get('/users'),
+  getAll: () => runWithFallback(() => api.get('/users'), () => getFallbackUsers()),
   getById: (id) => api.get(`/users/${id}`),
-  updateProfile: (data) => api.patch('/users/me/profile', data),
-  changePassword: (data) => api.patch('/users/me/password', data),
-  updateRole: (id, role) => api.patch(`/users/${id}/role`, { role }),
+  updateProfile: (data) => runWithFallback(() => api.patch('/users/me/profile', data), () => updateFallbackProfile(data)),
+  changePassword: (data) => runWithFallback(() => api.patch('/users/me/password', data), () => changeFallbackPassword(data)),
+  updateRole: (id, role) => runWithFallback(() => api.patch(`/users/${id}/role`, { role }), () => updateFallbackUserRole(id, role)),
 };

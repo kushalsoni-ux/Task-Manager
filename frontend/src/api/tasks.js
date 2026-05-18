@@ -1,12 +1,26 @@
 import api from './axios';
+import {
+  addFallbackTaskComment,
+  createFallbackTask,
+  deleteFallbackTask,
+  deleteFallbackTaskComment,
+  getFallbackTaskById,
+  getFallbackTasks,
+  runWithFallback,
+  updateFallbackTask,
+  updateFallbackTaskStatus,
+} from './fallbackData';
 
 export const tasksAPI = {
-  getAll: (params) => api.get('/tasks', { params }),
-  getById: (id) => api.get(`/tasks/${id}`),
-  create: (data) => api.post('/tasks', data),
-  update: (id, data) => api.put(`/tasks/${id}`, data),
-  updateStatus: (id, status) => api.patch(`/tasks/${id}/status`, { status }),
-  delete: (id) => api.delete(`/tasks/${id}`),
-  addComment: (id, content) => api.post(`/tasks/${id}/comments`, { content }),
-  deleteComment: (taskId, commentId) => api.delete(`/tasks/${taskId}/comments/${commentId}`),
+  getAll: (params) => runWithFallback(() => api.get('/tasks', { params }), () => getFallbackTasks(params)),
+  getById: (id) => runWithFallback(() => api.get(`/tasks/${id}`), () => getFallbackTaskById(id)),
+  create: (data) => runWithFallback(() => api.post('/tasks', data), () => createFallbackTask(data)),
+  update: (id, data) => runWithFallback(() => api.put(`/tasks/${id}`, data), () => updateFallbackTask(id, data)),
+  updateStatus: (id, status) =>
+    runWithFallback(() => api.patch(`/tasks/${id}/status`, { status }), () => updateFallbackTaskStatus(id, status)),
+  delete: (id) => runWithFallback(() => api.delete(`/tasks/${id}`), () => deleteFallbackTask(id)),
+  addComment: (id, content) =>
+    runWithFallback(() => api.post(`/tasks/${id}/comments`, { content }), () => addFallbackTaskComment(id, content)),
+  deleteComment: (taskId, commentId) =>
+    runWithFallback(() => api.delete(`/tasks/${taskId}/comments/${commentId}`), () => deleteFallbackTaskComment(taskId, commentId)),
 };

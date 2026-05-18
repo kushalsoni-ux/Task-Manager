@@ -1,8 +1,15 @@
 import api from './axios';
+import {
+  deleteFallbackNotification,
+  getFallbackNotificationsData,
+  markAllFallbackNotificationsAsRead,
+  markFallbackNotificationAsRead,
+  runWithFallback,
+} from './fallbackData';
 
 export const notificationsAPI = {
-  getAll: () => api.get('/notifications'),
-  markAsRead: (id) => api.patch(`/notifications/${id}/read`),
-  markAllAsRead: () => api.patch('/notifications/read-all'),
-  delete: (id) => api.delete(`/notifications/${id}`),
+  getAll: () => runWithFallback(() => api.get('/notifications'), () => getFallbackNotificationsData()),
+  markAsRead: (id) => runWithFallback(() => api.patch(`/notifications/${id}/read`), () => markFallbackNotificationAsRead(id)),
+  markAllAsRead: () => runWithFallback(() => api.patch('/notifications/read-all'), () => markAllFallbackNotificationsAsRead()),
+  delete: (id) => runWithFallback(() => api.delete(`/notifications/${id}`), () => deleteFallbackNotification(id)),
 };

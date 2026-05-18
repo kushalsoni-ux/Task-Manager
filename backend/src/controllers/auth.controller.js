@@ -21,6 +21,7 @@ const register = async (req, res, next) => {
 
       return res.status(201).json(serialize({
         message: 'Account created',
+        storageMode: 'fallback',
         user,
         ...generateTokenPair(user),
       }));
@@ -57,6 +58,7 @@ const login = async (req, res, next) => {
       const safeUser = getSafeUser(user);
       return res.json(serialize({
         message: 'Login successful',
+        storageMode: 'fallback',
         user: safeUser,
         ...generateTokenPair(safeUser),
       }));
@@ -82,7 +84,7 @@ const refresh = async (req, res, next) => {
 
     if (!hasDatabaseConfig()) {
       const user = getFallbackUserById(decoded.id) || getUserWithFallback(decoded);
-      return res.json(serialize({ ...generateTokenPair(user), user }));
+      return res.json(serialize({ storageMode: 'fallback', ...generateTokenPair(user), user }));
     }
 
     const { rows: [user] } = await query(
@@ -99,6 +101,10 @@ const refresh = async (req, res, next) => {
   }
 };
 
-const me = (req, res) => res.json(serialize({ user: req.user }));
+const me = (req, res) =>
+  res.json(serialize({
+    user: req.user,
+    ...(!hasDatabaseConfig() && { storageMode: 'fallback' }),
+  }));
 
 module.exports = { register, login, refresh, me };

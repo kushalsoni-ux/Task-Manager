@@ -1,5 +1,6 @@
 import api from './axios';
+import { getFallbackDashboardData, runWithFallback } from './fallbackData';
 
 export const dashboardAPI = {
-  get: () => api.get('/dashboard'),
+  get: () => runWithFallback(() => api.get('/dashboard'), () => getFallbackDashboardData()),
 };

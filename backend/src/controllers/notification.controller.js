@@ -10,7 +10,7 @@ const { serialize } = require('../utils/serialize');
 const getNotifications = async (req, res, next) => {
   try {
     if (!hasDatabaseConfig()) {
-      return res.json(serialize(getFallbackNotifications(req.user.id)));
+      return res.json(serialize({ storageMode: 'fallback', ...getFallbackNotifications(req.user.id) }));
     }
 
     const { rows } = await query(

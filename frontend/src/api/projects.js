@@ -1,13 +1,28 @@
 import api from './axios';
+import {
+  addFallbackProjectMember,
+  createFallbackProject,
+  deleteFallbackProject,
+  getFallbackProjectById,
+  getFallbackProjects,
+  removeFallbackProjectMember,
+  runWithFallback,
+  updateFallbackProject,
+  updateFallbackProjectMemberRole,
+} from './fallbackData';
 
 export const projectsAPI = {
-  getAll: (params) => api.get('/projects', { params }),
-  getById: (id) => api.get(`/projects/${id}`),
-  create: (data) => api.post('/projects', data),
-  update: (id, data) => api.put(`/projects/${id}`, data),
-  delete: (id) => api.delete(`/projects/${id}`),
-  addMember: (id, data) => api.post(`/projects/${id}/members`, data),
-  removeMember: (projectId, userId) => api.delete(`/projects/${projectId}/members/${userId}`),
+  getAll: (params) => runWithFallback(() => api.get('/projects', { params }), () => getFallbackProjects()),
+  getById: (id) => runWithFallback(() => api.get(`/projects/${id}`), () => getFallbackProjectById(id)),
+  create: (data) => runWithFallback(() => api.post('/projects', data), () => createFallbackProject(data)),
+  update: (id, data) => runWithFallback(() => api.put(`/projects/${id}`, data), () => updateFallbackProject(id, data)),
+  delete: (id) => runWithFallback(() => api.delete(`/projects/${id}`), () => deleteFallbackProject(id)),
+  addMember: (id, data) => runWithFallback(() => api.post(`/projects/${id}/members`, data), () => addFallbackProjectMember(id, data)),
+  removeMember: (projectId, userId) =>
+    runWithFallback(() => api.delete(`/projects/${projectId}/members/${userId}`), () => removeFallbackProjectMember(projectId, userId)),
   updateMemberRole: (projectId, userId, role) =>
-    api.patch(`/projects/${projectId}/members/${userId}/role`, { role }),
+    runWithFallback(
+      () => api.patch(`/projects/${projectId}/members/${userId}/role`, { role }),
+      () => updateFallbackProjectMemberRole(projectId, userId, role)
+    ),
 };
